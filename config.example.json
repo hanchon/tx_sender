@@ -1,0 +1,9 @@
+{
+    "wallet": {
+        "main_seed": "seed for your main seed",
+        "dust_seed": "seed for your dust seed",
+        "min_amount_sat_to_operate": 20000
+    },
+    "insight_url": "http://your.ip.address/insight-api/",
+    "network": "testnet"
+}
