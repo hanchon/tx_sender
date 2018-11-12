@@ -9,7 +9,7 @@ This is simple tool to create and send some bitcoin transactions.
 
 # Configuration
 
-* Create a config.json using the config.example.json and configure your nodes.
+* Create a config.json using the config.example.json and set your values.
 
 
 # Run
