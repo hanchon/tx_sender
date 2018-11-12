@@ -37,7 +37,8 @@ function ParseUtxos(raw_data) {
         var milliseconds = (new Date).getTime();
 
         let i = 0;
-        while (i < 1000) {
+        while (i < Config.max_depth) {
+            // Create the transaction
             var tx = new bitcore.Transaction()
                 .from(utxos)
                 .to(dust_wallet.GetAddres(), 2000)
@@ -45,12 +46,19 @@ function ParseUtxos(raw_data) {
                 .feePerKb(300)
                 .sign(main_wallet.GetPrivKey());
 
-            console.log(tx.serialize());
+            // Send the transaction
+            if (Config.send_transactions) {
+                let sent = await insight.SendTransaction(tx.serialize());
+            } else {
+                console.log(tx.serialize());
+            }
 
+            // Check the founds to keep the process going
             if (tx.outputs[1].satoshis < Config.wallet.min_amount_sat_to_operate) {
                 throw 'No utxo / founds to operate';
             }
 
+            // Prepare the next utxo
             utxos = [new bitcore.Transaction.UnspentOutput({
                 "txid": tx.hash,
                 "vout": 1,
@@ -63,10 +71,11 @@ function ParseUtxos(raw_data) {
 
         }
 
+        // Some stats:
         let total_time = (new Date).getTime() - milliseconds;
         console.log("Total time (w/o first request):" + total_time);
 
     } catch (e) {
-        console.log("error. " + e);
+        console.log("ERROR: " + e);
     }
 })();
