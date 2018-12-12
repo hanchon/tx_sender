@@ -5,8 +5,8 @@ var Wallet = require('./wallet.js');
 var Config = require('./config.json');
 
 let insight = new Explorer(Config.insight_url);
-let main_wallet = new Wallet();
-let dust_wallet = new Wallet(false);
+let main_wallet = new Wallet(Config.wallet.main_seed);
+let dust_wallet = new Wallet(Config.wallet.dust_seed);
 
 function ParseUtxos(raw_data) {
     var utxos = [];
