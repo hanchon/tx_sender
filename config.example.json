@@ -7,5 +7,12 @@
     "insight_url": "http://your.ip.address/insight-api/",
     "network": "testnet",
     "max_depth": 25,
-    "send_transactions": true
+    "send_transactions": true,
+
+    "bot" : {
+        "bigMoneySeed": "Founder wallet",
+        "walletsCount": 10,
+        "botBaseSeed": "Spam wallets",
+        "bigFeeInSatoshis": 20000
+    }
 }
