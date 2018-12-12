@@ -8,31 +8,10 @@ let insight = new Explorer(Config.insight_url);
 let main_wallet = new Wallet(Config.wallet.main_seed);
 let dust_wallet = new Wallet(Config.wallet.dust_seed);
 
-function ParseUtxos(raw_data) {
-    var utxos = [];
-    var amount = 0;
-    raw_data.forEach(function (utxo) {
-        var utxo_ = new bitcore.Transaction.UnspentOutput({
-            "txid": utxo["txid"],
-            "vout": utxo["vout"],
-            "address": utxo["address"],
-            "scriptPubKey": utxo["scriptPubKey"],
-            "amount": utxo["amount"]
-        })
-        utxos.push(utxo_);
-        amount = amount + utxo["amount"]
-    });
-    if (bitcore.Unit.fromBTC(amount).toSatoshis() < Config.wallet.min_amount_sat_to_operate) {
-        throw 'No utxo / founds to operate';
-    } else {
-        return utxos;
-    }
-}
-
 (async () => {
     try {
         let res = await insight.GetUtxos(main_wallet.GetAddres());
-        let utxos = ParseUtxos(res);
+        let utxos = insight.ParseUtxos(res, Config.wallet.min_amount_sat_to_operate);
 
         var milliseconds = (new Date).getTime();
 
@@ -49,6 +28,9 @@ function ParseUtxos(raw_data) {
             // Send the transaction
             if (Config.send_transactions) {
                 let sent = await insight.SendTransaction(tx.serialize());
+                if (!sent) {
+                    break;
+                }
             } else {
                 console.log(tx.serialize());
             }

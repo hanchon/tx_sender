@@ -32,10 +32,18 @@ module.exports = class Explorer {
     }
 
     async SendTransaction(raw_tx) {
-        let info = await this.GenericPostRequest("tx/send", {
-            rawtx: raw_tx
-        })
-        return info;
+        try {
+            let info = await this.GenericPostRequest("tx/send", {
+                rawtx: raw_tx
+            })
+            return info;
+        } catch (e) {
+            // TODO: pass the error in the return value
+            console.log("****NOTE: AFTER THIS ERROR THE PROGRAM WILL CONTINUE****");
+            console.log(e);
+            return null;
+        }
+
     }
 
     GenericGetRequest(method) {
@@ -65,6 +73,27 @@ module.exports = class Explorer {
     async GetUtxos(wallet) {
         let info = await this.GetUtxosFromWallet(wallet);
         return info;
+    }
+
+    ParseUtxos(raw_data, min_satoshis) {
+        var utxos = [];
+        var amount = 0;
+        raw_data.forEach(function (utxo) {
+            var utxo_ = new bitcore.Transaction.UnspentOutput({
+                "txid": utxo["txid"],
+                "vout": utxo["vout"],
+                "address": utxo["address"],
+                "scriptPubKey": utxo["scriptPubKey"],
+                "amount": utxo["amount"]
+            })
+            utxos.push(utxo_);
+            amount = amount + utxo["amount"]
+        });
+        if (bitcore.Unit.fromBTC(amount).toSatoshis() < min_satoshis) {
+            throw 'No utxo / founds to operate';
+        } else {
+            return utxos;
+        }
     }
 
 }
