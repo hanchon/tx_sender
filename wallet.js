@@ -4,7 +4,7 @@ var config = require('./config.json');
 module.exports = class Wallet {
 
     constructor(seed) {
-        if (config.wallet.network == "testnet") {
+        if (config.network == "testnet") {
             this.network = bitcore.Networks.testnet;
         } else {
             this.network = bitcore.Networks.mainnet;
